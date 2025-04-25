@@ -9,11 +9,11 @@ using Photon.Pun;
 
 namespace RepoMemeMod
 {
-    [BepInPlugin("conq.repomememod", "RepoMemeMod", "1.0.0")]
+    [BepInPlugin("conq.repomememod", "RepoMemeMod", "1.0.1")]
     public class RepostedPlugin : BaseUnityPlugin
     {
         public static RepostedPlugin instance;
-        public static bool Debug = true;
+        public static bool Debug = false;
         public static Dictionary<string, PlayerAvatar> playerList = new Dictionary<string, PlayerAvatar>();
         private void Awake()
         {
@@ -58,7 +58,7 @@ namespace RepoMemeMod
     {
         private class Command
         {
-            Regex regex;
+            public Regex regex;
             public int parameters;
             Match m;
 
@@ -221,12 +221,11 @@ namespace RepoMemeMod
                 if (RepostedPlugin.playerList.TryGetValue(cmd.Key.Player, out var player)){
                     cmd.Value.Invoke(player, cmd.Key);
                     if (wasExecuted) return false;
-                    continue;
                 }
                 else
                 {
                     cmd.Value.Invoke(null, cmd.Key);
-                    return false;
+                    if (wasExecuted) return false;
                 }
             }         
 
