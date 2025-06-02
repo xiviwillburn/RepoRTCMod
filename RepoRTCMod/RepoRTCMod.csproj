@@ -7,8 +7,8 @@
     <ProjectGuid>{2C5D12A7-DA76-4FCE-934C-E6AA7BFAD6BD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RepoMemeMod</RootNamespace>
-    <AssemblyName>RepoMemeMod</AssemblyName>
+    <RootNamespace>RepoRTCMod</RootNamespace>
+    <AssemblyName>RepoRTCMod</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
