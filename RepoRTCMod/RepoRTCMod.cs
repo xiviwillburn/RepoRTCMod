@@ -7,18 +7,18 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Photon.Pun;
 
-namespace RepoMemeMod
+namespace RepoRTCMod
 {
-    [BepInPlugin("conq.repomememod", "RepoMemeMod", "1.0.1")]
-    public class RepostedPlugin : BaseUnityPlugin
+    [BepInPlugin("conq.reportcmod", "RepoRTCMod", "1.0.1")]
+    public class RepoRTCPlugin : BaseUnityPlugin
     {
-        public static RepostedPlugin instance;
+        public static RepoRTCPlugin instance;
         public static bool Debug = false;
         public static Dictionary<string, PlayerAvatar> playerList = new Dictionary<string, PlayerAvatar>();
         private void Awake()
         {
             instance = this;
-            var harmony = new Harmony("conq.repomememod");
+            var harmony = new Harmony("conq.reportcmod");
             harmony.PatchAll();
         }
 
@@ -41,22 +41,22 @@ namespace RepoMemeMod
         static void Patch(ref PlayerAvatar __instance, ref string _playerName, ref string _steamID)
         {
             string storedName = _playerName.ToLower();
-            if (RepostedPlugin.playerList.TryGetValue(storedName, out var tmp))
+            if (RepoRTCPlugin.playerList.TryGetValue(storedName, out var tmp))
             {
-                RepostedPlugin.playerList[storedName] = __instance;
+                RepoRTCPlugin.playerList[storedName] = __instance;
             }
             else
             {
-                RepostedPlugin.playerList.Add(storedName, __instance);
+                RepoRTCPlugin.playerList.Add(storedName, __instance);
             }
-            RepostedPlugin.instance.Log($"{_playerName} -> {storedName}");
+            RepoRTCPlugin.instance.Log($"{_playerName} -> {storedName}");
         }
     }
 
     [HarmonyPatch()]
     public class ChatPatch 
     {
-        private class Command
+        internal class Command
         {
             public Regex regex;
             public int parameters;
@@ -99,21 +99,21 @@ namespace RepoMemeMod
 
         private static void Say(PlayerAvatar player, Command m, bool isWhisper)
         {
-            RepostedPlugin.instance.Log("Say");
+            RepoRTCPlugin.instance.Log("Say");
             player.photonView.RPC("ChatMessageSendRPC", Photon.Pun.RpcTarget.All, new object[] { m.Message, isWhisper });
             wasExecuted = true;
         }
 
         private static void ForceTumble(PlayerAvatar player, Command m)
         {
-            RepostedPlugin.instance.Log("ForceTumble");
+            RepoRTCPlugin.instance.Log("ForceTumble");
             player.tumble.TumbleRequest(true, false);
             wasExecuted = true;
         }
 
         private static void TruckSay(PlayerAvatar player, Command m, bool isTaxman)
         {
-            RepostedPlugin.instance.Log($"TruckSay {m.Player}:{m.Message}");
+            RepoRTCPlugin.instance.Log($"TruckSay {m.Player}:{m.Message}");
             if (player == null && m.parameters == 3) return;
             TruckScreenText.instance.MessageSendCustom(isTaxman ? "" : SemiFunc.PlayerGetSteamID(player), m.Message, 0);
             wasExecuted = true;
@@ -121,10 +121,10 @@ namespace RepoMemeMod
 
         private static void ChangeColor(PlayerAvatar player, Command m)
         {
-            RepostedPlugin.instance.Log("ChangeColor");
+            RepoRTCPlugin.instance.Log("ChangeColor");
             if (int.TryParse(m.Message, out var value))
             {
-                //RepostedPlugin.instance.Log($"Color is {value}");
+                //RepoRTCPlugin.instance.Log($"Color is {value}");
                 if (value > 0 && value < 36)
                 {
                     player.PlayerAvatarSetColor(value);
@@ -135,7 +135,7 @@ namespace RepoMemeMod
 
         private static void ForceImpulse(PlayerAvatar player, Command m)
         {
-            RepostedPlugin.instance.Log("ForceImpulse");
+            RepoRTCPlugin.instance.Log("ForceImpulse");
             string[] vector = m.Message.Split(',');
             if (vector.Length == 3)
             {
@@ -147,12 +147,11 @@ namespace RepoMemeMod
 
         private static void Reivive(PlayerAvatar player, Command m)
         {
-            RepostedPlugin.instance.Log("Reivive");
-            //RepostedPlugin.instance.Log($"Debug current health value: {Traverse.Create(player.playerHealth).Field<int>("health").Value}");
+            RepoRTCPlugin.instance.Log("Reivive");
             
             if (Traverse.Create(player.playerHealth).Field<int>("health").Value <= 0)
             {
-                RepostedPlugin.instance.Log("Revive true");
+                RepoRTCPlugin.instance.Log("Revive true");
                 player.photonView.RPC("ReviveRPC", Photon.Pun.RpcTarget.All, new object[] { false });
                 wasExecuted = true;
             }
@@ -161,7 +160,7 @@ namespace RepoMemeMod
 
         private static void Heal(PlayerAvatar player, Command m)
         {
-            RepostedPlugin.instance.Log("Heal");
+            RepoRTCPlugin.instance.Log("Heal");
             if (int.TryParse(m.Message,out int value))
             {
                 var final = Traverse.Create(player.playerHealth).Field<int>("health").Value;
@@ -187,7 +186,7 @@ namespace RepoMemeMod
 
         private static void FlashlightFlick(PlayerAvatar player, Command m)
         {
-            RepostedPlugin.instance.Log("FlashlightFlick");
+            RepoRTCPlugin.instance.Log("FlashlightFlick");
             if (float.TryParse(m.Message, out var value))
             {
                 player.photonView.RPC("FlashlightFlickerRPC", Photon.Pun.RpcTarget.All, new object[] { value });
@@ -197,7 +196,7 @@ namespace RepoMemeMod
 
         private static void ScreenGlitch(PlayerAvatar player, Command m)
         {
-            RepostedPlugin.instance.Log("ScreenGlitch");
+            RepoRTCPlugin.instance.Log("ScreenGlitch");
             player.photonView.RPC("PlayerGlitchShortRPC", Photon.Pun.RpcTarget.All, new object[] {  });
             wasExecuted = true;
         }
@@ -218,7 +217,7 @@ namespace RepoMemeMod
             {
                 if (!cmd.Key.Match(_message)) continue;
                 // Check if there's a player with that name
-                if (RepostedPlugin.playerList.TryGetValue(cmd.Key.Player, out var player)){
+                if (RepoRTCPlugin.playerList.TryGetValue(cmd.Key.Player, out var player)){
                     cmd.Value.Invoke(player, cmd.Key);
                     if (wasExecuted) return false;
                 }
