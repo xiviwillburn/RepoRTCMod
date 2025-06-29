@@ -9,7 +9,7 @@ using Photon.Pun;
 
 namespace RepoRTCMod
 {
-    [BepInPlugin("conq.reportcmod", "RepoRTCMod", "1.0.1")]
+    [BepInPlugin("conq.reportcmod", "RepoRTCMod", "1.0.2")]
     public class RepoRTCPlugin : BaseUnityPlugin
     {
         public static RepoRTCPlugin instance;
@@ -208,7 +208,7 @@ namespace RepoRTCMod
         }
 
         [HarmonyPrefix]
-        static bool Patch(ref string _message, ref bool _debugMessage)
+        static bool Patch(ref string _message)
         {
             // Check if it's a command
             if (_message[0] != '/') return true;
