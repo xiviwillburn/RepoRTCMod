@@ -13,7 +13,7 @@ namespace RepoRTCMod
     public class RepoRTCPlugin : BaseUnityPlugin
     {
         public static RepoRTCPlugin instance;
-        public static bool Debug = false;
+        public static bool Debug = true;
         public static Dictionary<string, PlayerAvatar> playerList = new Dictionary<string, PlayerAvatar>();
         private void Awake()
         {
